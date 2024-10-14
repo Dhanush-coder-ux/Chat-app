@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to right, cyan, violet, pink);
+        }
+
+        .container {
+            border: 2px solid white;
+            height: 500px;
+            width: 600px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 5px white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            backdrop-filter: blur(200px);
+        }
+
+        .input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .input button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .input button:hover {
+            background-color: #0056b3;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        /* Align client messages to the left */
+.client {
+    text-align: right;
+    background-color: #e0f7fa; /* Light cyan background for client messages */
+    padding: 10px;
+    margin: 5px 50px 5px 0;
+    border-radius: 10px 10px 10px 0;
+    max-width: 60%;
+    align-self: flex-end;
+}
+
+
+.server {
+    text-align:left;
+    background-color: #007bff; /* Blue background for server messages */
+    color: white;
+    padding: 10px;
+    margin: 5px 0 5px 50px;
+    border-radius: 10px 10px 0 10px;
+    max-width: 60%;
+    align-self: flex-start ;
+}
+
+.messages {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+    </style>
+   
+</head>
+<body>
+
+    <div class="container">
+        <div class="messages" id="messages">
+            {% for message in messages %}
+                <p class="{{ 'client' if message.sender == 'client' else 'server' }}">{{ message.content }}</p>
+            {% endfor %}
+        </div>
+   
+
+        <div class="input">
+            <input type="text" id="message" placeholder="Enter your message...">
+            <button title="Send" type="submit" id="button">Send</button>
+        </div>
+    </div>
+
+</body>
+
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+<script>
+    const socket = io.connect('http://127.0.0.1:5000');
+    let userId = null; // To store the unique user ID
+
+    socket.on('assign_user_id', (data) => {
+        userId = data.user_id;
+        console.log("Assigned user ID: ", userId);
+    });
+
+
+    document.getElementById('button').addEventListener('click', () => {
+        sendMessage();
+    });
+
+    document.getElementById('message').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    function sendMessage() {
+        const message = document.getElementById('message').value;
+        if (message.trim() && userId) {
+            socket.emit('message', { content: message, user_id: userId });
+            document.getElementById('message').value = ''; // Clear input after sending
+        }
+    }
+
+    socket.on('response', (msg) => {
+        const messageContainer = document.getElementById('messages');
+        const messageClass = msg.sender === userId ? 'client' : 'server';
+        messageContainer.innerHTML += `<p class="${messageClass}">${msg.content}</p>`;
+        messageContainer.scrollTop = messageContainer.scrollHeight; // Auto scroll to the bottom
+    });
+</script>
+
+
+</html>
