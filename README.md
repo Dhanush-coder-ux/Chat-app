@@ -1,9 +1,7 @@
 
 
 
-![image alt](![Uploading image.png…]()
-)
-
+![image alt](https://github.com/Dhanush-coder-ux/chat-app/blob/dccbed46fd17a4e4d8c84e8b63e0ade2e5045141/Screenshot%202024-10-16%20141852.png)
 
 # Real-Time Chat Application
 
