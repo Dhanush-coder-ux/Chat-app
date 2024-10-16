@@ -1,15 +1,3 @@
-
-
-
-
-
-
-
-
-
-![Uploading Screenshot 2024-10-16 141852.png…]()
-
-
 # Real-Time Chat Application
 
 This project is a real-time chat application built with Flask, Flask-SocketIO, and MySQL. It allows users to send and receive messages instantly, with messages stored in a MySQL database. Each user is assigned a unique ID, and the app supports multiple users communicating at the same time.
